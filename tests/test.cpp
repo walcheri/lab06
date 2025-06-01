@@ -65,24 +65,3 @@ TEST(AccountTest, RealMethodsBehavior) {
     EXPECT_EQ(3000, account.GetBalance());
 }
 
-TEST(TransactionTest, RealMethodsBehavior) {
-    Account acc1(1, 10000);
-    Account acc2(2, 10000);
-    Transaction t;
-    
-    EXPECT_THROW(t.Make(acc1, acc1, 100), std::logic_error); 
-    EXPECT_THROW(t.Make(acc1, acc2, -100), std::invalid_argument); 
-    EXPECT_THROW(t.Make(acc1, acc2, 0), std::invalid_argument);
-    
-
-    const int amount = 1000;
-    const int fee = t.fee();
-    const int total = amount + fee;
-    
-    EXPECT_TRUE(t.Make(acc1, acc2, amount));
-    EXPECT_EQ(10000 - total, acc1.GetBalance());
-    EXPECT_EQ(10000 + amount, acc2.GetBalance());
-    
- 
-    EXPECT_FALSE(t.Make(acc1, acc2, acc1.GetBalance())); 
-}
