@@ -60,4 +60,3 @@ if(BUILD_TESTS)
     endif()
 endif()
 
-include(CPackConfig.cmake)
