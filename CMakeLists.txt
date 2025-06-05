@@ -3,6 +3,17 @@ project(solver VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CPACK_PACKAGE_NAME "solver")
+set(CPACK_PACKAGE_VERSION "1.0.0")
+set(CPACK_PACKAGE_DESCRIPTION "Equation solver application")
+set(CPACK_PACKAGE_CONTACT "walcheri <vagzvrf@mail.ru>")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "walcheri <vagzvrf@mail.ru>")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.27)") 
+set(CPACK_RPM_PACKAGE_RELEASE "1")
+set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+set(CPACK_RPM_PACKAGE_REQUIRES "glibc >= 2.27")
+
+include(CPack)
 
 project(banking_app VERSION 1.0.0 DESCRIPTION "Banking Application")
 
