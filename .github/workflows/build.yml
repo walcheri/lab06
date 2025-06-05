@@ -23,7 +23,6 @@ jobs:
           cmake .. && make
 
       - name: Generate packages (DEB/RPM)
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           cd build
           cpack -G DEB
@@ -43,8 +42,6 @@ jobs:
           path: |
             build/*.deb
             build/*.rpm
-            solver-*.tar.gz
-            solver-*.zip
 
   build-windows:
     runs-on: windows-latest
@@ -61,7 +58,6 @@ jobs:
           cmake --build . --config Release
 
       - name: Generate MSI package
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           cd build
           cpack -G WIX
@@ -81,8 +77,6 @@ jobs:
           name: windows-packages
           path: |
             build/*.msi
-            solver-*.tar.gz
-            solver-*.zip
 
   build-macos:
     runs-on: macos-latest
@@ -97,7 +91,6 @@ jobs:
           cmake .. && make
 
       - name: Generate DMG package
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           cd build
           cpack -G DragNDrop
@@ -115,23 +108,3 @@ jobs:
           name: macos-packages
           path: |
             build/*.dmg
-            solver-*.tar.gz
-            solver-*.zip
-
-  release:
-    needs: [build-linux, build-windows, build-macos]
-    runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            linux-packages/*
-            windows-packages/*
-            macos-packages/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
