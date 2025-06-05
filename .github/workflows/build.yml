@@ -29,13 +29,11 @@ jobs:
           cpack -G RPM
 
       - name: Create source archives
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           git archive --format=tar.gz --prefix=solver-${GITHUB_REF#refs/tags/}/ -o solver-${GITHUB_REF#refs/tags/}.tar.gz HEAD
           git archive --format=zip --prefix=solver-${GITHUB_REF#refs/tags/}/ -o solver-${GITHUB_REF#refs/tags/}.zip HEAD
 
       - name: Upload artifacts
-        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
           name: linux-packages
@@ -63,7 +61,6 @@ jobs:
           cpack -G WIX
 
       - name: Create source archives
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           7z a -ttar solver-${env:GITHUB_REF#refs/tags/}.tar * > nul
           7z a -tgzip solver-${env:GITHUB_REF#refs/tags/}.tar.gz solver-${env:GITHUB_REF#refs/tags/}.tar > nul
@@ -71,7 +68,6 @@ jobs:
           del solver-${env:GITHUB_REF#refs/tags/}.tar > nul
 
       - name: Upload artifacts
-        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
           name: windows-packages
@@ -96,13 +92,11 @@ jobs:
           cpack -G DragNDrop
 
       - name: Create source archives
-        if: startsWith(github.ref, 'refs/tags/')
         run: |
           git archive --format=tar.gz --prefix=solver-${GITHUB_REF#refs/tags/}/ -o solver-${GITHUB_REF#refs/tags/}.tar.gz HEAD
           git archive --format=zip --prefix=solver-${GITHUB_REF#refs/tags/}/ -o solver-${GITHUB_REF#refs/tags/}.zip HEAD
 
       - name: Upload artifacts
-        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
           name: macos-packages
