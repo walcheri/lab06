@@ -60,3 +60,8 @@ if(BUILD_TESTS)
     endif()
 endif()
 
+include(InstallRequiredSystemLibraries)
+set(CPACK_GENERATOR "DEB;RPM;DragNDrop;WIX")
+set(CPACK_PACKAGE_NAME "solver")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+include(CPack)
