@@ -1,22 +1,86 @@
-name: Build
-run-name: ${{ github.actor }} compiling based on CMakeLists.txt
+name: CI Build and Package
+run-name: ${{ github.actor }} running CI pipeline
 on: [push]
+
+env:
+  BUILD_DIR: _build
+  COVERAGE_FLAGS: -DBUILD_TESTS=ON -DBUILD_COVERAGE=ON
+
 jobs:
-  compile_on_ubuntu:
+  test_and_coverage:
+    name: Build and Test with Coverage
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
+      - name: Checkout repository with submodules
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Build Tests
+      
+      - name: Configure and Build with Tests
         run: |
-          cmake -H. -B_build -DBUILD_TESTS=ON -DBUILD_COVERAGE=ON
-          cmake --build _build
-          cmake --build _build --target test -- ARGS=--verbose
-      - name: Generate and send a code coverage report to Coveralls
+          cmake -S . -B ${{ env.BUILD_DIR }} ${{ env.COVERAGE_FLAGS }}
+          cmake --build ${{ env.BUILD_DIR }}
+          cmake --build ${{ env.BUILD_DIR }} --target test -- ARGS=--verbose
+      
+      - name: Generate and Upload Coverage Report
         uses: threeal/gcovr-action@v1.0.0
         with:
           excludes: third-party
           coveralls-send: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  package_linux:
+    name: Create Linux Packages
+    needs: test_and_coverage
+    if: startsWith(github.event.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Build Project
+        run: |
+          cmake -S . -B ${{ env.BUILD_DIR }}
+          cmake --build ${{ env.BUILD_DIR }}
+      
+      - name: Generate Packages (TGZ, DEB, RPM)
+        run: |
+          cd ${{ env.BUILD_DIR }}
+          cpack -G "TGZ" -G "DEB" -G "RPM"
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux_packages
+          path: ${{ env.BUILD_DIR }}/banking_app-*
+
+  package_windows:
+    name: Create Windows Packages
+    needs: test_and_coverage
+    if: startsWith(github.event.ref, 'refs/tags/v')
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      
+      - name: Build Project
+        run: |
+          cmake -S . -B ${{ env.BUILD_DIR }}
+          cmake --build ${{ env.BUILD_DIR }}
+      
+      - name: Generate Packages (ZIP, NSIS)
+        run: |
+          cd ${{ env.BUILD_DIR }}
+          cpack -G "ZIP" -G "NSIS"
+      
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows_packages
+          path: ${{ env.BUILD_DIR }}/banking_app-*

@@ -43,7 +43,6 @@ if(BUILD_TESTS)
         gtest_main
     )
     
-    # Регистрация тестов
     add_test(NAME banking_tests COMMAND banking_tests)
 
     if(BUILD_COVERAGE)
@@ -60,3 +59,5 @@ if(BUILD_TESTS)
         coverage_evaluate()
     endif()
 endif()
+
+include(CPackConfig.cmake)
